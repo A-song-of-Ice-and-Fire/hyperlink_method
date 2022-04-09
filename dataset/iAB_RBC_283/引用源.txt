@@ -1,0 +1,1 @@
+Zhang, M., Cui, Z., Jiang, S., & Chen, Y. (2018, April). Beyond link prediction: Predicting hyperlinks in adjacency space. In Thirty-Second AAAI Conference on Artificial Intelligence.

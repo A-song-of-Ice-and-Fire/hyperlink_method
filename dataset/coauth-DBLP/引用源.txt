@@ -1,0 +1,1 @@
+Benson, A. R., Abebe, R., Schaub, M. T., Jadbabaie, A., & Kleinberg, J. (2018). Simplicial closure and higher-order link prediction. Proceedings of the National Academy of Sciences, 115(48), E11221-E11230.
