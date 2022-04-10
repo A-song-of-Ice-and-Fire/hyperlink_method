@@ -40,7 +40,7 @@ class BaseKatzIndex(Indicator):
             if self.binarization:
                 adj_matrix[adj_matrix!=0] = 1
             identity_matrix =  np.eye(adj_matrix.shape[0])
-            self.scores_matrix = np.linalg.inv(
+            self.scores_matrix = np.linalg.pinv(
                         (identity_matrix - _lambda * adj_matrix)
                     ) - identity_matrix
 
@@ -50,9 +50,11 @@ class BaseKatzIndex(Indicator):
             if self.binarization:
                 adj_matrix[adj_matrix!=0] = 1
             identity_matrix = ssp.csr_matrix(np.eye(adj_matrix.shape[0]))
-            self.scores_matrix = ssp.linalg.inv(
-                        (identity_matrix - _lambda * adj_matrix)
-                    ) - identity_matrix
+            temp_matrix = identity_matrix - _lambda * adj_matrix
+            try:
+                self.scores_matrix = ssp.linalg.inv(temp_matrix) - identity_matrix
+            except RuntimeError:
+                self.scores_matrix = np.linalg.pinv(temp_matrix.toarray()) - identity_matrix
 
         # 得到预测分数
         return  self(edge_matrix)
@@ -77,7 +79,7 @@ class BaseKatzIndex(Indicator):
                             adj_matrix[adj_matrix!=0] = 1    
                         _inc_matrix = pos_matrix[:,pos_index[0]]
                         identity_matrix =  np.eye(adj_matrix.shape[0])
-                        katz_matrix = np.linalg.inv(
+                        katz_matrix = np.linalg.pinv(
                             (identity_matrix - condicated_lambda * adj_matrix)
                         ) - identity_matrix
                     
@@ -92,9 +94,11 @@ class BaseKatzIndex(Indicator):
                             adj_matrix[adj_matrix!=0] = 1    
                         _inc_matrix = pos_matrix[:,pos_index[0]].tocsr()
                         identity_matrix =  ssp.csr_matrix(np.eye(adj_matrix.shape[0]))
-                        katz_matrix = ssp.linalg.inv(
-                            (identity_matrix - condicated_lambda * adj_matrix)
-                        ) - identity_matrix
+                        temp_matrix = identity_matrix - condicated_lambda * adj_matrix
+                        try:
+                            katz_matrix = ssp.linalg.inv(temp_matrix) - identity_matrix
+                        except RuntimeError:
+                            katz_matrix = np.linalg.pinv(temp_matrix.toarray()) - identity_matrix
                 except LinAlgError as _:
                     continue
                 else:

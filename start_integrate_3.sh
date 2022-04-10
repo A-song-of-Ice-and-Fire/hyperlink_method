@@ -1,0 +1,2 @@
+python main.py -d cat-edge-music-blues-reviews,chuancai,email-Eu,iAB_RBC_283,iJO1366,yuecai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,CoreComplex -r 10 -m LR -i LRW,LRW,LRW,TRW,CN,CE,SKatz,WK3 -rp 0.1 -srw -s 1,2,3;
+python main.py -d cat-edge-music-blues-reviews,chuancai,email-Eu,iAB_RBC_283,iJO1366,yuecai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,CoreComplex -r 10 -m LGBM -i LRW,LRW,LRW,TRW,CN,CE,SKatz,WK3 -rp 0.1 -srw -s 1,2,3;
