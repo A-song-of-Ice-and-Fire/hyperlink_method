@@ -1,0 +1,12 @@
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m CN;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m CE;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m NNAA;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m NEAA;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m ENAA;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m EEAA;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m DE;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m WK2;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m WK3;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m JC;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m COS;
+python main.py -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,email-Eu,iAB_RBC_283,iJO1366,yuecai,CoreComplex -r 10 -m RA;

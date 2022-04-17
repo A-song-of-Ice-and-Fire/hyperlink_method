@@ -34,19 +34,20 @@ parser.add_argument("-i","--indicators",type=str,help="指定方法为集成或�
 parser.add_argument("-d","--datasets",type=str,help="指定对应的数据集",default="chuancai,yuecai,cat-edge-music-blues-reviews,email-Eu,iAB_RBC_283,iJO1366,arXiv_cond-mat,CoreComplex")
 parser.add_argument("-r","--repeat",type=int,default=10,help="实验的重复次数")  
 parser.add_argument("-ns","--no_save",action="store_true",help="是否保存实验结果")  
-parser.add_argument("-srw","--simple_rw",action="store_true",help="是否指定为简单随机游走")
 parser.add_argument("-wid","--width",type=str,default="1,2,3",help="指定方法为或指定指标中包含HWalk或HEffi时生效，用来指定HWalk的宽度")
 parser.add_argument("-len","--length",type=str,default="1,2,3",help="指定方法为或指定指标中包含HWalk时生效，用来指定HWalk的长度")
 parser.add_argument("-bn","--base_number",type=str,default="0.1,0.2",help="指定方法为或指定指标中包含SHEffi且衰减系数类型为exp时生效，用来指定衰减exp的底数")
 parser.add_argument("-rp","--restart_prob",type=str,default = "0.2",help="指定方法为带重启的随机游走类指标时生效，用来指定随机游走的重启概率")
 parser.add_argument("-s","--steps",type=str,default = "5",help="指定方法为局部随机游走指标（LTRW）或简单资源分配（SRA）或概率传播（PS）时生效，用来指定局部随机游走的游走步数或简单资源分配、概率传播的步数")
-parser.add_argument("-a","--alpha",type=str,default="0.2",help="指定方法为叠加RA（SuRA）、平稳RA（StRA）时生效，用来指定叠加资源分配的衰减系数或平稳RA中平稳部分的系数")
+parser.add_argument("-a","--alpha",type=str,default="0.2",help="指定方法为叠加RA（SuRA）时生效，用来指定叠加资源分配的衰减系数")
+parser.add_argument("-pt","--precision_threshold",type=int,default=50,help="计算precision@n时的阈值数量")
 cmd_args = parser.parse_args()
 
 
 def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
     model_str = cmd_args.method
     repeat_num = cmd_args.repeat
+    precision_threshold = cmd_args.precision_threshold
     is_save = not (cmd_args.no_save)
     # 此部分用于得到HWalk或HEffi的指定参数
     width_list = cmd_args.width.split(",")[::-1]
@@ -69,10 +70,6 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
                 model_params["feature_params"].append({
                     "width"    : int(width_list.pop())
                 })
-            elif feature_class in ["TRW","RRW"]:
-                model_params["feature_params"].append({
-                    "restart_prob" : float(re_prob_list.pop())
-                })
             elif feature_class in ["LTRW","SLTRW"]:
                 model_params["feature_params"].append({
                     "restart_prob" : float(re_prob_list.pop()),
@@ -85,17 +82,16 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
                         "base_number"   : float(base_number_list.pop())
                     }
                 )
+            elif feature_class in ["StRA","TRW","RRW"]:
+                model_params["feature_params"].append(
+                    {
+                        "restart_prob" : float(re_prob_list.pop())
+                    }
+                )
             elif feature_class in ["SRA","PS"]:
                 model_params["feature_params"].append(
                     {
                         "steps": int(steps_list.pop())
-                    }
-                )
-            elif feature_class == "StRA":
-                model_params["feature_params"].append(
-                    {
-                        "restart_prob" : float(re_prob_list.pop()),
-                        "alpha"   : float(alpha_list.pop())
                     }
                 )
             elif feature_class == "SuRA":
@@ -132,26 +128,18 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
                         "width" : int(width_list.pop()) ,
                         "base_number" : float(base_number_list.pop())
                     }
-        elif model_str in ["TRW","RRW"]:
-            model_params = {
-                    "restart_prob" : float(re_prob_list.pop()),
-                    "simple_rw"    : cmd_args.simple_rw
-                }
         elif model_str in ["LTRW","SLTRW"]:
             model_params = {
                 "restart_prob" : float(re_prob_list.pop()),
                 "steps" : int(steps_list.pop()),
-                "simple_rw"    : cmd_args.simple_rw
             }
         elif model_str in ["SRA","SPS"]:
             model_params = {
                     "steps": int(steps_list.pop())
                 }
-            
-        elif model_str == "StRA":
+        elif model_str in ["StRA","TRW","RRW"]:
             model_params = {
-                    "restart_prob" : float(re_prob_list.pop()),
-                    "alpha"   : float(alpha_list.pop())
+                    "restart_prob" : float(re_prob_list.pop())
                 }
         elif model_str == "SuRA":
             model_params = {
@@ -171,5 +159,6 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
         "is_interator"  : is_interator,
         "model_params"  : model_params,
         "dataset_names" : dataset_names,
-        "is_save"       : is_save
+        "is_save"       : is_save,
+        "precision_threshold" : precision_threshold
     }

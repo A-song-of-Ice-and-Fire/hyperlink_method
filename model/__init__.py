@@ -32,7 +32,8 @@ from .indicator import (
     ProbabilisticSpread,
     SimpleProbabilisticSpread,
     SpreadComb,
-    SuperposeSpreadComb
+    SuperposeSpreadComb,
+    LocalRandomWalk
 )
 from .integrator import (
     integrator_abb_map,

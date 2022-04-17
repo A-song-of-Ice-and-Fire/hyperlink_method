@@ -29,6 +29,7 @@ from .PS import ProbabilisticSpread
 from .SPS import SimpleProbabilisticSpread
 from .SC import SpreadComb
 from .SSC import SuperposeSpreadComb
+from .LRW import LocalRandomWalk
 indicator_abb_map = {
     "NNAA" : NodeNodeAdamicAdar,
     "NEAA" : NodeEdgeAdamicAdar,

@@ -10,12 +10,13 @@ from typing import (
 )
 
 class TargetRandomWalk(Indicator):
-    def __init__(self,restart_prob:float=0.2,simple_rw:bool=True):         
+    def __init__(self,restart_prob:float=0.2):         
         super().__init__()        
-        assert 1 > restart_prob > 0 , f"重启概率{restart_prob}不合法！！！合法范围：(0,1)"
-        self.restart_prob = restart_prob
+        if 1 > restart_prob > 0: 
+            self.restart_prob = restart_prob
+        else:
+            self.restart_prob = None
         self.ss_matrix = None        
-        self.simple_rw = simple_rw
     def train(                                  # 该方法用来生成分数矩阵
         self,
         edge_matrix:Matrix,
@@ -25,35 +26,17 @@ class TargetRandomWalk(Indicator):
         # 计算邻接矩阵
         if isinstance(edge_matrix,np.ndarray):
             pos_matrix = edge_matrix[:,obvious_edge_index]      # 此为关联矩阵
-            if self.simple_rw:
-                edge_size_inv_vector , node_degree_inv_vector = (1 / pos_matrix.sum(axis=0)) , (1 / pos_matrix.sum(axis=1))
-                edge_size_inv_vector[np.isinf(edge_size_inv_vector)] = 0
-                node_degree_inv_vector[np.isinf(node_degree_inv_vector)] = 0
-                transition_matrix =  pos_matrix @ np.diag(edge_size_inv_vector) @ pos_matrix.T @ np.diag(node_degree_inv_vector)
-            else:
-                adj_matrix = pos_matrix @ pos_matrix.T
-                edge_size_vector = pos_matrix.sum(axis=0)
-                transition_matrix = pos_matrix @ np.diag(edge_size_vector) @ pos_matrix.T-adj_matrix
-                transition_matrix[np.diag_indices_from(transition_matrix)] = 0
-                transition_matrix /= transition_matrix.sum(axis=1,keepdims=True) 
-                transition_matrix[np.isnan(transition_matrix)] = 0
+            edge_size_inv_vector , node_degree_inv_vector = (1 / pos_matrix.sum(axis=0)) , (1 / pos_matrix.sum(axis=1))
+            edge_size_inv_vector[np.isinf(edge_size_inv_vector)] = 0
+            node_degree_inv_vector[np.isinf(node_degree_inv_vector)] = 0
+            transition_matrix =  pos_matrix @ np.diag(edge_size_inv_vector) @ pos_matrix.T @ np.diag(node_degree_inv_vector)
             self.ss_matrix = self.restart_prob * np.linalg.inv(np.eye(transition_matrix.shape[0]) - (1 - self.restart_prob) * transition_matrix)
         elif isinstance(edge_matrix,ssp.spmatrix):
             pos_matrix = edge_matrix[:,obvious_edge_index].tocsr()
-            if self.simple_rw:
-                edge_size_inv_vector , node_degree_inv_vector = np.asarray(1 / pos_matrix.sum(axis=0)).squeeze() , np.asarray(1 / pos_matrix.sum(axis=1)).squeeze()
-                edge_size_inv_vector[np.isinf(edge_size_inv_vector)] = 0
-                node_degree_inv_vector[np.isinf(node_degree_inv_vector)] = 0
-                transition_matrix =  pos_matrix @ ssp.diags(edge_size_inv_vector).tocsr() @ pos_matrix.T @ ssp.diags(node_degree_inv_vector).tocsr()
-            else:
-                adj_matrix = (pos_matrix @ pos_matrix.T).tocsr()
-                edge_size_vector = np.asarray(pos_matrix.sum(axis=0)).squeeze()
-                transition_matrix = pos_matrix @ ssp.diags(edge_size_vector) @ pos_matrix.T - adj_matrix
-                transition_matrix = transition_matrix.tolil()
-                transition_matrix[np.diag_indices_from(transition_matrix)] = 0
-                transition_matrix /= transition_matrix.sum(axis=1)
-                transition_matrix[np.isnan(transition_matrix)] = 0
-                transition_matrix = ssp.csr_matrix(transition_matrix)                
+            edge_size_inv_vector , node_degree_inv_vector = np.asarray(1 / pos_matrix.sum(axis=0)).squeeze() , np.asarray(1 / pos_matrix.sum(axis=1)).squeeze()
+            edge_size_inv_vector[np.isinf(edge_size_inv_vector)] = 0
+            node_degree_inv_vector[np.isinf(node_degree_inv_vector)] = 0
+            transition_matrix =  pos_matrix @ ssp.diags(edge_size_inv_vector).tocsr() @ pos_matrix.T @ ssp.diags(node_degree_inv_vector).tocsr()        
             self.ss_matrix = self.restart_prob * ssp.linalg.inv(ssp.eye(transition_matrix.shape[0]) - (1 - self.restart_prob) * transition_matrix)
         # 得到预测分数
         return  self(edge_matrix)

@@ -95,24 +95,33 @@ def downSampleForNE(inc_matrix:Union[np.ndarray,ssp.spmatrix],sample_times:int)-
     return NE_matrix
 
 # metrics可选：AUROC、AUPR、all
-def evalution(label:Iterable,prediction:Iterable,metrics:str="all")->Tuple:
-    assert metrics in ["AUROC","AUPR","PRECISION","all"] , f"metrics可选：AUROC、AUPR、PRECISION、all，而非{metrics}"
+def evalution(label:Iterable,prediction:Iterable,metrics:str="all",**kwargs)->Tuple:
+    assert metrics in ["AUROC","AUPR","PRECISION","PRECISION@N","all"] , f"metrics可选：AUROC、AUPR、PRECISION、PRECISION@N、all，而非{metrics}"
     label , prediction = np.array(label) , np.array(prediction)
-    auroc = roc_auc_score(label,prediction)
-    precision , recall , _ = precision_recall_curve(label,prediction)
-    aupr = auc(recall,precision)
-    # 计算precision（以正样本数作为阈值数量）
-    threshold_num = (label == 1).sum()
-    binary_pred = np.zeros_like(label)
-    binary_pred[np.argsort(-prediction)[:threshold_num]] = 1
-    precision = precision_score(label,binary_pred)
+
     res = {}
     if metrics in ["AUROC","all"]:
+        auroc = roc_auc_score(label,prediction)
         res["AUROC"] = auroc
     if metrics in ["AUPR","all"]:
+        precision , recall , _ = precision_recall_curve(label,prediction)
+        aupr = auc(recall,precision)
         res["AUPR"] = aupr
     if metrics in ["PRECISION","all"]:
+        threshold_num = (label == 1).sum()
+        binary_pred = np.zeros_like(label)
+        binary_pred[np.argsort(-prediction)[:threshold_num]] = 1
+        precision = precision_score(label,binary_pred)
         res["PRECISION"] = precision
+    if metrics in ["PRECISION@N","all"]:
+        max_threshold_num = min(kwargs.get(threshold_num,50),prediction.size)
+        threshold_nums = np.arange(5,max_threshold_num+1,5)
+        res["PRECISION@N"] = {}
+        for threshold_num in threshold_nums:
+            binary_pred = np.zeros_like(label)
+            binary_pred[np.argsort(-prediction)[:threshold_num]] = 1
+            precision = precision_score(label,binary_pred)
+            res["PRECISION@N"][str(threshold_num)] = precision
     return res
     
 def evalutionAsBase(edge_matrix:np.ndarray,label:Iterable,prediction:Iterable,joint_assess_lb:int=10)->Dict[str,Optional[Dict[str,float]]]:
@@ -158,8 +167,6 @@ def saveLog(df_dict:Dict[str,DataFrame],save_dir:str,model:Module,model_params:D
         elif isinstance(model,Indicator):
             for value in model_params.values():
                 model_str += f"-{value}"
-        df_dict["df_auroc"].to_csv(os.path.join(save_dir,f"{model_str}_auroc_{timestamp}.csv"))
-        df_dict["df_aupr"].to_csv(os.path.join(save_dir,f"{model_str}_aupr_{timestamp}.csv"))
-        df_dict["df_precision"].to_csv(os.path.join(save_dir,f"{model_str}_precision_{timestamp}.csv"))
-        if isinstance(model,Integrator):
-            df_dict["df_fi"].to_csv(os.path.join(save_dir,f"{model_str}_fi_{timestamp}.csv"))
+        for key in df_dict.keys():
+            if df_dict.get(key,None) is not None:
+                df_dict[key].to_csv(os.path.join(save_dir,f"{model_str}_{key}_{timestamp}.csv"))
