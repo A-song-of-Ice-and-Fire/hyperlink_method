@@ -6,8 +6,8 @@ from typing import (
     Optional
 )
 from . import (
-    NodeNodeAdamicAdar,
-    EdgeNodeAdamicAdar
+    VertVertAdamicAdar,
+    EdgeVertAdamicAdar
 )
 
 class CliqueStarAdamicAdar(Indicator):
@@ -20,8 +20,8 @@ class CliqueStarAdamicAdar(Indicator):
         obvious_edge_index:np.ndarray
         )->Optional[float]:
         super().train(edge_matrix,obvious_edge_index)
-        clique_AA = NodeNodeAdamicAdar()
-        star_AA = EdgeNodeAdamicAdar()
+        clique_AA = VertVertAdamicAdar()
+        star_AA = EdgeVertAdamicAdar()
         clique_AA.train(edge_matrix,obvious_edge_index)
         star_AA.train(edge_matrix,obvious_edge_index)
         # 计算邻接矩阵

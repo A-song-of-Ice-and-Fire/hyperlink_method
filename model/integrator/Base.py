@@ -67,7 +67,7 @@ class Integrator(Module):
             self.feature_objects.append(feature_object)
         X_train = self.getFeatureVector(edge_matrix)
         searcher = RandomizedSearchCV(
-            self.model, params_space, n_iter=300, scoring="average_precision",n_jobs=-1
+            self.model, params_space, n_iter=300, scoring="roc_auc",n_jobs=-1
         )
         if self._scaler:
             X_train = self._scaler.fit_transform(X_train)

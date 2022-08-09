@@ -1,9 +1,9 @@
 from model.module import Module
 from .indicator import (
     indicator_abb_map,
-    NodeNodeAdamicAdar,
-    NodeEdgeAdamicAdar,
-    EdgeNodeAdamicAdar,
+    VertVertAdamicAdar,
+    VertEdgeAdamicAdar,
+    EdgeVertAdamicAdar,
     EdgeEdgeAdamicAdar,
     CliqueLineAdamicAdar,
     CliqueStarAdamicAdar,
@@ -51,12 +51,12 @@ from .intensifier import (
 str_to_object = {**indicator_abb_map,**integrator_abb_map,**intensifier_abb_map}
 
 def object_to_str(object:Module):
-    if isinstance(object,NodeNodeAdamicAdar):
-        return "NNAA"
-    elif isinstance(object,NodeEdgeAdamicAdar):
-        return "NEAA"
-    elif isinstance(object,EdgeNodeAdamicAdar):
-        return "ENAA"
+    if isinstance(object,VertVertAdamicAdar):
+        return "VVAA"
+    elif isinstance(object,VertEdgeAdamicAdar):
+        return "VEAA"
+    elif isinstance(object,EdgeVertAdamicAdar):
+        return "EVAA"
     elif isinstance(object,EdgeEdgeAdamicAdar):
         return "EEAA"
     elif isinstance(object,CliqueLineAdamicAdar):
@@ -110,7 +110,7 @@ def object_to_str(object:Module):
     elif isinstance(object,TargetRandomWalk):
         return "TRW"
     elif isinstance(object,RestartRandomWalk):
-        return "RRW"
+        return "RWR"
     elif isinstance(object,LocalTargetRandomWalk):
         return "LTRW"
     elif isinstance(object,SuperposedLocalTargetRandomWalk):

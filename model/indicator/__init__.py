@@ -1,8 +1,8 @@
 from model.indicator.DE import Density
 from model.indicator.TRW import TargetRandomWalk
-from .NNAA import NodeNodeAdamicAdar
-from .NEAA import NodeEdgeAdamicAdar
-from .ENAA import EdgeNodeAdamicAdar
+from .VVAA import VertVertAdamicAdar
+from .VEAA import VertEdgeAdamicAdar
+from .EVAA import EdgeVertAdamicAdar
 from .EEAA  import EdgeEdgeAdamicAdar
 from .CLAA import CliqueLineAdamicAdar
 from .CSAA import CliqueStarAdamicAdar
@@ -18,7 +18,7 @@ from .HKatz import HyperKatzIndex
 from .SKatz import SimpleKatzIndex
 from .HWalk import HyperWalk
 from .HEffi import HyperEfficiency
-from .RRW import RestartRandomWalk
+from .RWR import RestartRandomWalk
 from .SHEffi import SuperposedHyperEfficiency
 from .LTRW import LocalTargetRandomWalk
 from .SLTRW import SuperposedLocalTargetRandomWalk
@@ -31,9 +31,9 @@ from .SC import SpreadComb
 from .SSC import SuperposeSpreadComb
 from .LRW import LocalRandomWalk
 indicator_abb_map = {
-    "NNAA" : NodeNodeAdamicAdar,
-    "NEAA" : NodeEdgeAdamicAdar,
-    "ENAA" : EdgeNodeAdamicAdar,
+    "VVAA" : VertVertAdamicAdar,
+    "VEAA" : VertEdgeAdamicAdar,
+    "EVAA" : EdgeVertAdamicAdar,
     "EEAA" : EdgeEdgeAdamicAdar,
     "CLAA" : CliqueLineAdamicAdar,
     "CSAA" : CliqueStarAdamicAdar,
@@ -51,7 +51,7 @@ indicator_abb_map = {
     "HWalk" : HyperWalk,
     "HEffi" : HyperEfficiency,
     "TRW"   : TargetRandomWalk,
-    "RRW"   : RestartRandomWalk,
+    "RWR"   : RestartRandomWalk,
     "LTRW"  : LocalTargetRandomWalk,
     "SHEffi"    : SuperposedHyperEfficiency,
     "SLTRW"     : SuperposedLocalTargetRandomWalk,

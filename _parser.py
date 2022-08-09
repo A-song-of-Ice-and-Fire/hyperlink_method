@@ -4,7 +4,7 @@ from typing import Dict
 from model.indicator.Base import Indicator
 from model.integrator.Base import Integrator
 from model.intensifier.Base import Intensifier
-save_dir = r"./output"
+save_dir = r"./output_mns"
 dataset_dir = r"./dataset"
 dataset_names = ["chuancai","yuecai","iAB_RBC_283","iJO1366","arXiv_cond-mat","email-Eu","cat-edge-music-blues-reviews"]
 JE_start_point = {
@@ -12,7 +12,12 @@ JE_start_point = {
         "yuecai"          : 4,
         "iAB_RBC_283"     : 6,
         "iJO1366"         : 6,
-        "arXiv_cond-mat"  : 5
+        "cat-edge-music-blues-reviews" : 4,
+        "email-Eu"      : 11,
+        "DBLP-Co-authorship"    : 9,
+        "Cora-Co-citation"      : 6,
+        "Cora-Co-reference"     : 6,
+        "CoreComplex"           : 6
     }
 
 preprocess_log = {
@@ -29,25 +34,29 @@ random_seed = 2
 
 
 parser = argparse.ArgumentParser(description="该程序目的是集合不同指标作为特征以进行链路预测")
-parser.add_argument("-m","--method",type=str,choices=["NNAA","NEAA","ENAA","EEAA","CLAA","CSAA","RA","LR","RF","LGBM","CN","CE","CO","CF","WCF","JC","COS","WK2","WK3","DE","HKatz","SKatz","HWalk","HEffi","SHEffi","TRW","RRW","LTRW","SLTRW","SRA","StRA","SuRA","PS","SPS","SC","SSC"],help="指定一个用来链路预测的方法",default="NNAA")
+parser.add_argument("-m","--method",type=str,choices=["VVAA","VEAA","EVAA","EEAA","CLAA","CSAA","RA","LR","RF","LGBM","CN","CE","CO","CF","WCF","JC","COS","WK2","WK3","DE","HKatz","SKatz","HWalk","HEffi","SHEffi","TRW","RWR","LTRW","SLTRW","SRA","StRA","SuRA","PS","SPS","SC","SSC"],help="指定一个用来链路预测的方法",default="VVAA")
 parser.add_argument("-i","--indicators",type=str,help="指定方法为集成或增强方法时该项起作用，指定特征的类型",default="NNAA,NEAA,ENAA,EEAA,HWalk")
-parser.add_argument("-d","--datasets",type=str,help="指定对应的数据集",default="chuancai,yuecai,cat-edge-music-blues-reviews,email-Eu,iAB_RBC_283,iJO1366,arXiv_cond-mat,CoreComplex")
+parser.add_argument("-d","--datasets",type=str,help="指定对应的数据集",default="chuancai,cat-edge-music-blues-reviews,iAB_RBC_283,iJO1366,Cora-Co-citation,Cora-Co-reference,DBLP-Co-authorship,CoreComplex")
 parser.add_argument("-r","--repeat",type=int,default=10,help="实验的重复次数")  
 parser.add_argument("-ns","--no_save",action="store_true",help="是否保存实验结果")  
 parser.add_argument("-wid","--width",type=str,default="1,2,3",help="指定方法为或指定指标中包含HWalk或HEffi时生效，用来指定HWalk的宽度")
 parser.add_argument("-len","--length",type=str,default="1,2,3",help="指定方法为或指定指标中包含HWalk时生效，用来指定HWalk的长度")
 parser.add_argument("-bn","--base_number",type=str,default="0.1,0.2",help="指定方法为或指定指标中包含SHEffi且衰减系数类型为exp时生效，用来指定衰减exp的底数")
-parser.add_argument("-rp","--restart_prob",type=str,default = "0.2",help="指定方法为带重启的随机游走类指标时生效，用来指定随机游走的重启概率")
+parser.add_argument("-rp","--restart_prob",type=str,default = "0.15",help="指定方法为带重启的随机游走类指标时生效，用来指定随机游走的重启概率")
 parser.add_argument("-s","--steps",type=str,default = "5",help="指定方法为局部随机游走指标（LTRW）或简单资源分配（SRA）或概率传播（PS）时生效，用来指定局部随机游走的游走步数或简单资源分配、概率传播的步数")
 parser.add_argument("-a","--alpha",type=str,default="0.2",help="指定方法为叠加RA（SuRA）时生效，用来指定叠加资源分配的衰减系数")
-parser.add_argument("-pt","--precision_threshold",type=int,default=50,help="计算precision@n时的阈值数量")
+parser.add_argument("-me","--metrics",type=str,default="all",choices=["AUROC","AUPR","PRECISION","PRECISION@N","all"],help="评估参数，指定评估的指标")
+parser.add_argument("-pt","--precision_threshold",type=int,default=50,help="评估参数，指定PRECISION@N的阈值数量")
 cmd_args = parser.parse_args()
 
 
 def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
     model_str = cmd_args.method
     repeat_num = cmd_args.repeat
-    precision_threshold = cmd_args.precision_threshold
+    evalution_params = {
+        "metrics" : cmd_args.metrics,
+        "precision_threshold" : cmd_args.precision_threshold
+    }
     is_save = not (cmd_args.no_save)
     # 此部分用于得到HWalk或HEffi的指定参数
     width_list = cmd_args.width.split(",")[::-1]
@@ -82,7 +91,7 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
                         "base_number"   : float(base_number_list.pop())
                     }
                 )
-            elif feature_class in ["StRA","TRW","RRW"]:
+            elif feature_class in ["StRA","TRW","RWR"]:
                 model_params["feature_params"].append(
                     {
                         "restart_prob" : float(re_prob_list.pop())
@@ -137,7 +146,7 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
             model_params = {
                     "steps": int(steps_list.pop())
                 }
-        elif model_str in ["StRA","TRW","RRW"]:
+        elif model_str in ["StRA","TRW","RWR"]:
             model_params = {
                     "restart_prob" : float(re_prob_list.pop())
                 }
@@ -160,5 +169,5 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
         "model_params"  : model_params,
         "dataset_names" : dataset_names,
         "is_save"       : is_save,
-        "precision_threshold" : precision_threshold
+        "evalution_params" : evalution_params
     }

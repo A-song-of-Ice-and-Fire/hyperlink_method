@@ -1,0 +1,1 @@
+python main.py  -r 10 -m LR -i CN,CE,VVAA,VEAA,EVAA,EEAA,JC,RWR,WK2,WK3 -d cat-edge-music-blues-reviews,chuancai,Cora-Co-citation,Cora-Co-reference,CoreComplex,DBLP-Co-authorship,iAB_RBC_283,iJO1366  -pt 400;

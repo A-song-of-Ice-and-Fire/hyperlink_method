@@ -31,7 +31,6 @@ class BaseKatzIndex(Indicator):
         _lambda = self.determineParmByCV(
             (edge_matrix[:,obvious_edge_index],edge_matrix[:,unobserved_edge_index])
             )
-        print(_lambda)
         pos_matrix = edge_matrix[:,obvious_edge_index]
         # 计算分数矩阵
 

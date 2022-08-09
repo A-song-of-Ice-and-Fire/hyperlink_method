@@ -2,7 +2,7 @@ import numpy as np
 import scipy.sparse as ssp
 
 from . import (
-    NodeNodeAdamicAdar,
+    VertVertAdamicAdar,
     EdgeEdgeAdamicAdar
 )
 from .Base import Indicator
@@ -22,7 +22,7 @@ class CliqueLineAdamicAdar(Indicator):
         )->Optional[float]:
         super().train(edge_matrix,obvious_edge_index)
         # 计算邻接矩阵
-        clique_AA = NodeNodeAdamicAdar()
+        clique_AA = VertVertAdamicAdar()
         line_AA = EdgeEdgeAdamicAdar()
         clique_AA.train(edge_matrix,obvious_edge_index)
         line_AA.train(edge_matrix,obvious_edge_index)
