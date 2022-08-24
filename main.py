@@ -40,8 +40,8 @@ if __name__ == "__main__":
 
     # 处理命令行参数
     res_dict = processingCommandParam(cmd_args)
-    model_str , repeat_num , is_interator , model_params , dataset_names , is_save , evalution_params = \
-        res_dict["model_str"] , res_dict["repeat_num"] , res_dict["is_interator"] , res_dict["model_params"] , res_dict["dataset_names"] , res_dict["is_save"] , res_dict["evalution_params"]
+    model_str , repeat_num , is_interator , model_params , dataset_names , is_save , evalution_params , ns_num = \
+        res_dict["model_str"] , res_dict["repeat_num"] , res_dict["is_interator"] , res_dict["model_params"] , res_dict["dataset_names"] , res_dict["is_save"] , res_dict["evalution_params"] , res_dict["ns_num"]
         
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -91,7 +91,10 @@ if __name__ == "__main__":
         for repeat_n in range(1,repeat_num+1):
             print(f"\n\n\n{'dataset_name':<15s}:{dataset_name}\n{'model_str':<15s}:{model_str}\n{'repeat_n':<15s}:{repeat_n}/{repeat_num}\n")
             # 构造负样本（依照初始的超边基数分布）,形式为负边矩阵
-            NE_matrix = downSampleByMNS(PO_matrix,PO_matrix.shape[1])
+            if ns_num<=0:
+                ns_num = PO_matrix.shape[1]
+                
+            NE_matrix = downSampleByMNS(PO_matrix,ns_num)
             if suffix == "npz":
                 NE_matrix = NE_matrix.tocsc()        
             kf = KFold(n_splits=kfold_num)

@@ -47,6 +47,7 @@ parser.add_argument("-s","--steps",type=str,default = "5",help="指定方法为�
 parser.add_argument("-a","--alpha",type=str,default="0.2",help="指定方法为叠加RA（SuRA）时生效，用来指定叠加资源分配的衰减系数")
 parser.add_argument("-me","--metrics",type=str,default="all",choices=["AUROC","AUPR","PRECISION","PRECISION@N","all"],help="评估参数，指定评估的指标")
 parser.add_argument("-pt","--precision_threshold",type=int,default=50,help="评估参数，指定PRECISION@N的阈值数量")
+parser.add_argument("-nsn","--negative_sample_num",type=int,default=-1,help="下采样负边的个数")
 cmd_args = parser.parse_args()
 
 
@@ -58,6 +59,7 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
         "precision_threshold" : cmd_args.precision_threshold
     }
     is_save = not (cmd_args.no_save)
+    ns_num = cmd_args.negative_sample_num
     # 此部分用于得到HWalk或HEffi的指定参数
     width_list = cmd_args.width.split(",")[::-1]
     length_list = cmd_args.length.split(",")[::-1]
@@ -169,5 +171,6 @@ def processingCommandParam(cmd_args:argparse.Namespace)->Dict:
         "model_params"  : model_params,
         "dataset_names" : dataset_names,
         "is_save"       : is_save,
-        "evalution_params" : evalution_params
+        "evalution_params" : evalution_params,
+        "ns_num"        : ns_num
     }
